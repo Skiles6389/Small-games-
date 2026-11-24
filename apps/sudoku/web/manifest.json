@@ -2,6 +2,7 @@
     "name": "Sudoku",
     "short_name": "Sudoku",
     "start_url": ".",
+    "scope": ".",
     "display": "standalone",
     "background_color": "#0D1626",
     "theme_color": "#0D1626",

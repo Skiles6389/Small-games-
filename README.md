@@ -10,6 +10,27 @@ clean interfaces, so the real ones can be plugged in later.
 
 ---
 
+## Playtest link (no install needed)
+
+**<https://skiles6389.github.io/Small-games-/>**
+
+Open it in your phone's browser. To make it feel like an app, use *Share →
+Add to Home Screen* (iPhone, Safari) or *⋮ → Add to Home screen* (Android,
+Chrome). Your games, stats and streak are saved in that browser.
+
+Every push to `main` rebuilds and republishes it automatically. The workflow
+is `.github/workflows/deploy-pages.yml`, and you can also run it by hand from
+the repo's *Actions* tab → *Deploy playtest to GitHub Pages* → *Run workflow*.
+After a deploy, a page that is already open may need a refresh to show the
+new version.
+
+**One-time setup (repo owner):** on GitHub, go to *Settings → Pages →
+Build and deployment → Source* and choose **GitHub Actions**. Then re-run
+the workflow once from the *Actions* tab. Until this is switched on, the
+deploy step fails with a "Pages not enabled"-style error.
+
+---
+
 ## Folder layout
 
 ```
