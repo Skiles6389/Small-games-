@@ -1,0 +1,19 @@
+name: game_core
+description: Shared building blocks for the Small Games family (theme, settings, saves, stats, daily puzzles, ad/IAP interfaces).
+publish_to: 'none'
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.14.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  material_ui: ^1.1.0
+  shared_preferences: ^2.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0

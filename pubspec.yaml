@@ -1,0 +1,13 @@
+# Root of the Small Games monorepo.
+#
+# This file only lists the packages that live in this repo (a "pub workspace").
+# Running `flutter pub get` here fetches dependencies for all of them at once.
+name: small_games_workspace
+publish_to: 'none'
+
+environment:
+  sdk: ^3.14.0
+
+workspace:
+  - packages/game_core
+  - apps/sudoku
