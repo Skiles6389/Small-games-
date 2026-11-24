@@ -80,6 +80,24 @@ void main() {
     await closeApp(tester);
   });
 
+  testWidgets('leaving a game shows its time on the continue button', (
+    tester,
+  ) async {
+    usePhoneScreen(tester);
+    final services = GameServices.inMemory(gameId: 'sudoku');
+    await tester.pumpWidget(SudokuApp(services: services, clock: () => today));
+    await tester.tap(find.text('New game'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Medium'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 3));
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Continue'), findsOneWidget);
+    expect(find.textContaining('Medium  0:03'), findsOneWidget);
+  });
+
   testWidgets('continue button appears for a saved game', (tester) async {
     usePhoneScreen(tester);
     final services = GameServices.inMemory(gameId: 'sudoku');

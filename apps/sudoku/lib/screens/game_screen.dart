@@ -161,115 +161,130 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
         ? 'Daily · ${shortDate(DailyPuzzle.parseKey(puzzle.dailyKey)!)}'
         : puzzle.difficulty.label;
 
-    return Focus(
-      autofocus: true,
-      onKeyEvent: _onKey,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          actions: [
-            IconButton(
-              tooltip: _userPaused ? 'Resume' : 'Pause',
-              icon: Icon(
-                _userPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
-              ),
-              onPressed: _togglePause,
+    return PopScope(
+      // Save before the home screen refreshes its "Continue" button.
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) _c.pauseTimer();
+      },
+      child: Focus(
+        autofocus: true,
+        onKeyEvent: _onKey,
+        child: _buildScaffold(context, colors, services, title),
+      ),
+    );
+  }
+
+  Widget _buildScaffold(
+    BuildContext context,
+    CalmColors colors,
+    GameServices services,
+    String title,
+  ) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          IconButton(
+            tooltip: _userPaused ? 'Resume' : 'Pause',
+            icon: Icon(
+              _userPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
             ),
-            IconButton(
-              tooltip: 'Settings',
-              icon: const Icon(Icons.tune_rounded),
-              onPressed: _openSettings,
-            ),
-          ],
-        ),
-        body: SafeArea(
-          top: false,
-          child: ListenableBuilder(
-            listenable: Listenable.merge([
-              _c,
-              services.settings,
-              services.purchases,
-            ]),
-            builder: (context, _) => Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
-                  child: Row(
-                    children: [
-                      if (_c.settings.showMistakes)
-                        Text(
-                          'Mistakes  ${_c.game.mistakes}',
-                          style: TextStyle(color: colors.textMuted),
-                        ),
-                      const Spacer(),
-                      Icon(
-                        Icons.schedule_rounded,
-                        size: 16,
-                        color: colors.textMuted,
-                      ),
-                      const SizedBox(width: 6),
+            onPressed: _togglePause,
+          ),
+          IconButton(
+            tooltip: 'Settings',
+            icon: const Icon(Icons.tune_rounded),
+            onPressed: _openSettings,
+          ),
+        ],
+      ),
+      body: SafeArea(
+        top: false,
+        child: ListenableBuilder(
+          listenable: Listenable.merge([
+            _c,
+            services.settings,
+            services.purchases,
+          ]),
+          builder: (context, _) => Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
+                child: Row(
+                  children: [
+                    if (_c.settings.showMistakes)
                       Text(
-                        formatDuration(_c.game.elapsedSeconds),
-                        style: TextStyle(
-                          color: colors.textMuted,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                        'Mistakes  ${_c.game.mistakes}',
+                        style: TextStyle(color: colors.textMuted),
                       ),
-                    ],
-                  ),
+                    const Spacer(),
+                    Icon(
+                      Icons.schedule_rounded,
+                      size: 16,
+                      color: colors.textMuted,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      formatDuration(_c.game.elapsedSeconds),
+                      style: TextStyle(
+                        color: colors.textMuted,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: SudokuBoard(
-                                controller: _c,
-                                onCellTap: (i) {
-                                  _haptic();
-                                  _c.select(i);
-                                },
+              ),
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: SudokuBoard(
+                              controller: _c,
+                              onCellTap: (i) {
+                                _haptic();
+                                _c.select(i);
+                              },
+                            ),
+                          ),
+                          Positioned.fill(
+                            child: IgnorePointer(
+                              ignoring: !_userPaused,
+                              child: AnimatedOpacity(
+                                duration: const Duration(milliseconds: 220),
+                                opacity: _userPaused ? 1 : 0,
+                                child: _PausedOverlay(onResume: _togglePause),
                               ),
                             ),
-                            Positioned.fill(
-                              child: IgnorePointer(
-                                ignoring: !_userPaused,
-                                child: AnimatedOpacity(
-                                  duration: const Duration(milliseconds: 220),
-                                  opacity: _userPaused ? 1 : 0,
-                                  child: _PausedOverlay(onResume: _togglePause),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                ActionBar(
-                  notesMode: _c.notesMode,
-                  canUndo: _c.game.canUndo,
-                  hintNeedsAd: !services.purchases.adsRemoved,
-                  onUndo: _c.undo,
-                  onErase: _c.erase,
-                  onToggleNotes: _c.toggleNotesMode,
-                  onHint: _hint,
-                ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: NumberPad(controller: _c, onDigit: _onDigit),
-                ),
-                const SizedBox(height: 8),
-                const AdBannerSlot(placement: 'game_bottom'),
-              ],
-            ),
+              ),
+              const SizedBox(height: 16),
+              ActionBar(
+                notesMode: _c.notesMode,
+                canUndo: _c.game.canUndo,
+                hintNeedsAd: !services.purchases.adsRemoved,
+                onUndo: _c.undo,
+                onErase: _c.erase,
+                onToggleNotes: _c.toggleNotesMode,
+                onHint: _hint,
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: NumberPad(controller: _c, onDigit: _onDigit),
+              ),
+              const SizedBox(height: 8),
+              const AdBannerSlot(placement: 'game_bottom'),
+            ],
           ),
         ),
       ),

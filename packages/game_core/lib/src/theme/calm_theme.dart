@@ -109,8 +109,12 @@ class CalmTheme {
       brightness: Brightness.dark,
       primary: c.accent,
       onPrimary: c.background,
+      primaryContainer: c.surfaceHigh,
+      onPrimaryContainer: c.text,
       secondary: c.accent,
       onSecondary: c.background,
+      secondaryContainer: c.surfaceHigh,
+      onSecondaryContainer: c.text,
       error: c.error,
       onError: c.background,
       surface: c.surface,
@@ -187,6 +191,10 @@ class CalmTheme {
         ),
       ),
       dividerTheme: DividerThemeData(color: c.gridLine, thickness: 1),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: c.accent,
+        linearTrackColor: c.surfaceHigh,
+      ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: c.surfaceHigh,
         contentTextStyle: TextStyle(color: c.text),
