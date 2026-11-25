@@ -12,7 +12,7 @@ clean interfaces, so the real ones can be plugged in later.
 
 ## Playtest link (no install needed)
 
-**<https://skiles6389.github.io/Small-games-/>**
+**<https://skiles6389.github.io/Small-games-/>** (works in any modern phone or desktop browser)
 
 Open it in your phone's browser. To make it feel like an app, use *Share →
 Add to Home Screen* (iPhone, Safari) or *⋮ → Add to Home screen* (Android,
